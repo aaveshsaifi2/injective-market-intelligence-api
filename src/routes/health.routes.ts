@@ -5,6 +5,30 @@ import { injectiveService } from "../services/injective.service";
 const router = Router();
 const START = Date.now();
 
+/**
+ * @swagger
+ * /v1/health:
+ *   get:
+ *     summary: API health check
+ *     description: Returns service uptime, Injective network, and tracked market stats.
+ *     tags: [System]
+ *     responses:
+ *       200:
+ *         description: Health status object
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: "ok"
+ *               version: "1.0.0"
+ *               uptime_seconds: 1234
+ *               network: "Mainnet"
+ *               tracked_markets: 150
+ *               market_breakdown:
+ *                 spot: 80
+ *                 derivative: 70
+ *               discovery_complete: true
+ *               timestamp: "2026-02-13T10:00:00.000Z"
+ */
 router.get("/", (_req, res) => {
   const stats = marketRegistry.stats();
   res.json({

@@ -9,6 +9,51 @@ import { round } from "../utils/math";
 
 const router = Router();
 
+/**
+ * @swagger
+ * /v1/markets:
+ *   get:
+ *     summary: List all tracked markets
+ *     tags: [Markets]
+ *     parameters:
+ *       - in: query
+ *         name: type
+ *         schema:
+ *           type: string
+ *           enum: [spot, derivative]
+ *         description: Filter by market type
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search by ticker or symbol
+ *     responses:
+ *       200:
+ *         description: List of markets
+ */
+
+
+/**
+ * @swagger
+ * /v1/markets/{market_id}/summary:
+ *   get:
+ *     summary: Get overall market intelligence summary
+ *     tags: [Markets]
+ *     parameters:
+ *       - in: path
+ *         name: market_id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Market ID or ticker (e.g. INJ/USDT)
+ *     responses:
+ *       200:
+ *         description: Market intelligence summary
+ *       404:
+ *         description: Market not found
+ */
+
+
 /** GET /v1/markets — list all tracked markets */
 router.get("/", (req, res) => {
   const typeFilter = req.query.type as string | undefined;

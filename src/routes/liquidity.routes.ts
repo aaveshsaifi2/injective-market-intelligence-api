@@ -4,6 +4,86 @@ import { liquidityService } from "../services/liquidity.service";
 
 const router = Router();
 
+/**
+ * @swagger
+ * /v1/liquidity/{market_id}/score:
+ *   get:
+ *     summary: Get liquidity score
+ *     tags: [Liquidity]
+ *     parameters:
+ *       - in: path
+ *         name: market_id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Liquidity score result
+ */
+
+/**
+ * @swagger
+ * /v1/liquidity/{market_id}/depth:
+ *   get:
+ *     summary: Get orderbook depth analysis
+ *     tags: [Liquidity]
+ *     parameters:
+ *       - in: path
+ *         name: market_id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Depth breakdown across distance bands
+ */
+
+/**
+ * @swagger
+ * /v1/liquidity/{market_id}/slippage:
+ *   get:
+ *     summary: Estimate slippage for a given trade size
+ *     tags: [Liquidity]
+ *     parameters:
+ *       - in: path
+ *         name: market_id
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: size
+ *         required: true
+ *         schema:
+ *           type: number
+ *         description: Trade size in USD
+ *       - in: query
+ *         name: side
+ *         schema:
+ *           type: string
+ *           enum: [buy, sell]
+ *     responses:
+ *       200:
+ *         description: Slippage estimate result
+ */
+
+/**
+ * @swagger
+ * /v1/liquidity/{market_id}/spread:
+ *   get:
+ *     summary: Get spread analytics
+ *     tags: [Liquidity]
+ *     parameters:
+ *       - in: path
+ *         name: market_id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Spread statistics and stability metrics
+ */
+
+
 router.get("/:market_id/score", async (req, res, next) => {
   try { res.json(await liquidityService.getScore(resolveMarket(req.params.market_id))); }
   catch (e) { next(e); }

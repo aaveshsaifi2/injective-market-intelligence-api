@@ -9,6 +9,59 @@ import { round } from "../utils/math";
 
 const router = Router();
 
+/**
+ * @swagger
+ * /v1/rankings/liquidity:
+ *   get:
+ *     summary: Rank markets by liquidity score
+ *     tags: [Rankings]
+ *     parameters:
+ *       - in: query
+ *         name: type
+ *         schema:
+ *           type: string
+ *           enum: [spot, derivative]
+ *     responses:
+ *       200:
+ *         description: Liquidity ranking list
+ */
+
+/**
+ * @swagger
+ * /v1/rankings/volatility:
+ *   get:
+ *     summary: Rank markets by volatility score
+ *     tags: [Rankings]
+ *     parameters:
+ *       - in: query
+ *         name: type
+ *         schema:
+ *           type: string
+ *           enum: [spot, derivative]
+ *     responses:
+ *       200:
+ *         description: Volatility ranking list
+ */
+
+/**
+ * @swagger
+ * /v1/compare:
+ *   get:
+ *     summary: Compare multiple markets
+ *     tags: [Rankings]
+ *     parameters:
+ *       - in: query
+ *         name: markets
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Comma-separated market identifiers
+ *     responses:
+ *       200:
+ *         description: Comparison result
+ */
+
+
 router.get("/liquidity", async (req, res, next) => {
   try {
     const typeFilter = req.query.type as string | undefined;

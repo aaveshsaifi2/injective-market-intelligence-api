@@ -24,13 +24,18 @@ app.use(helmet());
 app.use(cors());
 app.use(morgan("dev"));
 app.use(express.json());
-app.use(rateLimit({
-  windowMs: config.rateLimit.windowMs,
-  max: config.rateLimit.maxRequests,
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: { error: { code: "RATE_LIMITED", message: "Too many requests" } },
-}));
+
+app.use(
+  rateLimit({
+    windowMs: config.rateLimit.windowMs,
+    max: config.rateLimit.maxRequests,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: {
+      error: { code: "RATE_LIMITED", message: "Too many requests" },
+    },
+  })
+);
 
 /* ---- Swagger Docs ---- */
 const swaggerSpec = swaggerJsdoc({
@@ -39,15 +44,38 @@ const swaggerSpec = swaggerJsdoc({
     info: {
       title: "Injective Market Intelligence API",
       version: "1.0.0",
-      description: "Computed-data API transforming raw Injective orderbook/trade data into actionable intelligence scores.",
+      description:
+        "Computed-data API transforming raw Injective orderbook/trade data into actionable intelligence scores.",
       contact: { name: "SAIFID3X" },
       license: { name: "MIT" },
     },
-    servers: [{ url: `http://localhost:${config.port}`, description: "Local" }],
+    servers: [
+      {
+        url: `http://localhost:${config.port}`,
+        description: "Local development server",
+      },
+    ],
+    tags: [
+      { name: "System", description: "Health & system endpoints" },
+      { name: "Markets", description: "Market discovery & summaries" },
+      { name: "Liquidity", description: "Liquidity analytics endpoints" },
+      { name: "Volatility", description: "Volatility analytics endpoints" },
+      { name: "Microstructure", description: "Order flow & whale analytics" },
+      { name: "Rankings", description: "Market ranking & comparison endpoints" },
+    ],
   },
-  apis: [],
+
+  // 🔥 THIS IS THE IMPORTANT STEP 2 FIX
+  apis: ["./src/routes/*.ts"],
 });
-app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec, { customSiteTitle: "IMI-API Docs" }));
+
+app.use(
+  "/docs",
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSpec, {
+    customSiteTitle: "IMI-API Docs",
+  })
+);
 
 /* ---- Routes ---- */
 app.use("/v1/health", healthRoutes);
@@ -56,7 +84,6 @@ app.use("/v1/liquidity", liquidityRoutes);
 app.use("/v1/volatility", volatilityRoutes);
 app.use("/v1/microstructure", microstructureRoutes);
 app.use("/v1/rankings", rankingsRoutes);
-app.use("/v1", rankingsRoutes);
 
 /* ---- Root ---- */
 app.get("/", (_req, res) => {
@@ -66,21 +93,6 @@ app.get("/", (_req, res) => {
     docs: "/docs",
     health: "/v1/health",
     markets: "/v1/markets",
-    endpoints: {
-      liquidity_score: "GET /v1/liquidity/{market_id}/score",
-      liquidity_depth: "GET /v1/liquidity/{market_id}/depth",
-      liquidity_slippage: "GET /v1/liquidity/{market_id}/slippage?size=10000&side=buy",
-      liquidity_spread: "GET /v1/liquidity/{market_id}/spread",
-      volatility_current: "GET /v1/volatility/{market_id}/current",
-      volatility_regime: "GET /v1/volatility/{market_id}/regime",
-      volatility_history: "GET /v1/volatility/{market_id}/history?period=7d",
-      microstructure_flow: "GET /v1/microstructure/{market_id}/flow",
-      microstructure_whales: "GET /v1/microstructure/{market_id}/whales?hours=24",
-      microstructure_momentum: "GET /v1/microstructure/{market_id}/momentum",
-      rankings_liquidity: "GET /v1/rankings/liquidity?type=spot",
-      rankings_volatility: "GET /v1/rankings/volatility?type=derivative",
-      compare: "GET /v1/compare?markets=INJ/USDT,BTC/USDT PERP",
-    },
   });
 });
 
@@ -89,20 +101,20 @@ app.use(errorHandler as any);
 
 /* ---- Boot ---- */
 async function boot() {
-  // Discover markets from on-chain before accepting requests
   await marketRegistry.discoverMarkets();
 
   app.listen(config.port, () => {
     const stats = marketRegistry.stats();
+
     console.log(`
 ╔════════════════════════════════════════════════════════════════╗
 ║  🚀 Injective Market Intelligence API                         ║
 ║                                                                ║
-║  Server:    http://localhost:${config.port}                          ║
-║  Docs:      http://localhost:${config.port}/docs                     ║
-║  Health:    http://localhost:${config.port}/v1/health                ║
-║  Network:   ${String(config.network).padEnd(47)}║
-║  Markets:   ${String(stats.total).padEnd(4)} (${stats.spot} spot + ${String(stats.derivative).padEnd(2)} derivatives)${" ".repeat(21)}║
+║  Server:    http://localhost:${config.port}
+║  Docs:      http://localhost:${config.port}/docs
+║  Health:    http://localhost:${config.port}/v1/health
+║  Network:   ${String(config.network)}
+║  Markets:   ${stats.total} (${stats.spot} spot + ${stats.derivative} derivatives)
 ╚════════════════════════════════════════════════════════════════╝
     `);
   });
