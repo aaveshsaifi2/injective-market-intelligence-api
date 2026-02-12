@@ -258,10 +258,3 @@ GitHub: https://github.com/aaveshsaifi2
 
 ---
 
-If you'd like, I can also generate:
-
-- ✅ A professional hackathon-optimized README (for judges)
-- ✅ Swagger/OpenAPI spec
-- ✅ Production deployment guide (Railway/Render/Vercel)
-- ✅ Dockerfile
-- ✅ Postman collection
