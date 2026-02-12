@@ -58,8 +58,8 @@ const swaggerSpec = swaggerJsdoc({
     },
     servers: [
       {
-        url: `http://localhost:${config.port}`,
-        description: "Local development server",
+        url: `https://injective-market-intelligence-api.onrender.com/`,
+        description: "injective market intelligence API (production)",
       },
     ],
     tags: [
